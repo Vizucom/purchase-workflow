@@ -45,3 +45,20 @@ class PurchaseOrderLine(models.Model):
                     'internal' and line.location_dest_id:
                 move.write({'location_dest_id': line.location_dest_id.id})
         return res
+ 
+
+class StockPicking(models.Model):
+    _inherit = 'stock.picking'
+
+    @api.multi
+    def _update_picking_from_group_key(self, key):
+        """The picking is updated with data from the grouping key.
+        This method is designed for extensibility, so that other modules
+        can store more data based on new keys."""
+
+        print "location update_picking_from_group_key"
+        for rec in self:
+            for key_element in key:
+                if 'location_dest_id' in key_element.keys():
+                    rec.location_dest_id = key_element['location_dest_id']
+        return False
