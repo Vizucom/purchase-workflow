@@ -59,6 +59,6 @@ class StockPicking(models.Model):
         print "location update_picking_from_group_key"
         for rec in self:
             for key_element in key:
-                if 'location_dest_id' in key_element.keys():
+                if 'location_dest_id' in key_element.keys() and key_element['location_dest_id']:
                     rec.location_dest_id = key_element['location_dest_id']
         return False
