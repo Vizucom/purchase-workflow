@@ -22,7 +22,7 @@ class PurchaseOrderLine(models.Model):
         vals = super(PurchaseOrderLine, self)._first_picking_copy_vals(key,
                                                                        lines)
         for key_element in key:
-            if 'location_dest_id' in key_element.keys():
+            if 'location_dest_id' in key_element.keys() and key_element["location_dest_id"]:
                 vals['location_dest_id'] = key_element['location_dest_id'].id
         return vals
 
@@ -35,7 +35,10 @@ class PurchaseOrderLine(models.Model):
         additional keys or replace them by others."""
         key = super(PurchaseOrderLine, self)._get_group_keys(order, line,
                                                              picking=picking)
-        return key + ({'location_dest_id': line.location_dest_id},)
+        if line.location_dest_id:
+            key += ({'location_dest_id': line.location_dest_id},)
+
+        return key 
 
     @api.multi
     def _create_stock_moves(self, picking):
@@ -55,8 +58,8 @@ class StockPicking(models.Model):
         """The picking is updated with data from the grouping key.
         This method is designed for extensibility, so that other modules
         can store more data based on new keys."""
+        super(StockPicking, self)._update_picking_from_group_key(key)
 
-        print "location update_picking_from_group_key"
         for rec in self:
             for key_element in key:
                 if 'location_dest_id' in key_element.keys() and key_element['location_dest_id']:
